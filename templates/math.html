@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Puzzles</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fffaf0;
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      font-size: 30px;
+      margin-bottom: 30px;
+    }
+    .sub-button {
+      font-size: 20px;
+      padding: 15px 25px;
+      margin: 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .sub-button:hover {
+      background-color: #388e3c;
+    }
+    #puzzle-container {
+      margin-top: 40px;
+      text-align: left;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .puzzle {
+      background-color: #ffffff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Choose a Math Puzzle Type</h1>
+
+  <button class="sub-button" onclick="loadPuzzle('math_riddles')">Math Riddles</button>
+  <button class="sub-button" onclick="loadPuzzle('missing_operator')">Missing Operator</button>
+  <button class="sub-button" onclick="loadPuzzle('math_analogies')">Math Analogies</button>
+  <button class="sub-button" onclick="loadPuzzle('number_sequences')">Advanced Sequences</button>
+
+  <div id="puzzle-container"></div>
+
+  <script>
+    function loadPuzzle(type) {
+      fetch(`/get_puzzles?type=${type}&category=math`)
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("puzzle-container");
+          container.innerHTML = "";
+          if (data.length === 0) {
+            container.innerHTML = "<p>No puzzles found.</p>";
+            return;
+          }
+
+          data.forEach((puzzle, index) => {
+            const div = document.createElement("div");
+            div.className = "puzzle";
+            div.innerHTML = `
+              <p><strong>Puzzle ${index + 1}:</strong> ${puzzle.question}</p>
+              <button onclick="document.getElementById('answer-${index}').style.display='block'; this.style.display='none';">
+                Show Answer
+              </button>
+              <p id="answer-${index}" style="display: none;"><strong>Answer:</strong> ${puzzle.answer}</p>
+              ${puzzle.explanation ? `<p><em>${puzzle.explanation}</em></p>` : ""}
+            `;
+            container.appendChild(div);
+          });
+        });
+    }
+  </script>
+</body>
+</html>
